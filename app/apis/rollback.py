@@ -13,9 +13,12 @@ class TodoDAO(object):
         self.todos = []
 
     def get(self, id):
-        for todo in self.todos:
-            if todo["id"] == id:
-                return todo
+        if id:
+            for todo in self.todos:
+                if todo["id"] == id:
+                    return todo
+        elif id == None:
+            return {"rollback": self.todos}
         api.abort(404, "Todo {} doesn't exist".format(id))
 
     def create(self, data):
@@ -41,6 +44,10 @@ DAO = TodoDAO()
 @api.route("/")
 class RollbackList(Resource):
     """Shows a list of all Rollback, and lets you POST to add new tasks"""
+
+    @api.doc("Get_rollback")
+    def get(self):
+        return DAO.get(id=None)
 
     @api.doc("create_rollback")
     @api.expect(rollback)
