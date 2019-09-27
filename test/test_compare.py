@@ -2,7 +2,7 @@ from spintest import spintest
 from spintest.types import Int
 import random
 
-url = ["http://192.166.201.57:8080/"]
+url = ["http://127.0.0.1:8080/"]
 
 value = str(random.randint(1, 100))
 

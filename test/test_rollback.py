@@ -44,7 +44,7 @@ tasks = [
             }
         },
         "retry": 2,
-        "rollback": [{"method": "DELETED", "route": "rollback/{{id['id']}}"}],
+        "rollback": [{"method": "DELETE", "route": "rollback/{{id['id']}}"}],
     },
 ]
 
