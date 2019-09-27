@@ -1,18 +1,13 @@
 from flask_restplus import Namespace, Resource, fields
 import json
 
-api = Namespace("rollback", description=" Rollback operations")
+api = Namespace("rollback", description=" Route operations")
 rollback = api.model(
-    "rollback",
-    {
-        "id": fields.Integer(readOnly=True, description="The task unique identifier"),
-        "task": fields.String(required=True, description="The task details"),
-        #"status": fields.String(required=True, description="The status details"),
-    },
+    "rollback", {"task": fields.String(required=True, description="The task details")}
 )
 
 
-class Rollback(object):
+class TodoDAO(object):
     def __init__(self):
         self.counter = 0
         self.todos = []
@@ -25,29 +20,49 @@ class Rollback(object):
 
     def create(self, data):
         todo = data
+        todo["status"] = "ERROR"
         todo["id"] = self.counter = self.counter + 1
         self.todos.append(todo)
         return todo
 
+    def update(self, id, data):
+        todo = self.get(id)
+        todo.update(data)
+        return todo
 
-DAO = Rollback()
-DAO.create({'task': 'Create', "status": "RUNNING"})
+    def delete(self, id):
+        todo = self.get(id)
+        self.todos.remove(todo)
+
+
+DAO = TodoDAO()
 
 
 @api.route("/")
-class Rollback(Resource):
-    """Shows a Rollback"""
-
-    @api.doc("Rollback")
-    @api.marshal_list_with(rollback)
-    def get(self):
-        """List all tasks"""
-        return json.dump(DAO.compares)
+class RollbackList(Resource):
+    """Shows a list of all Rollback, and lets you POST to add new tasks"""
 
     @api.doc("create_rollback")
     @api.expect(rollback)
-    @api.marshal_with(rollback, code=201)
     def post(self):
         """Create a new task"""
         return DAO.create(api.payload), 201
 
+
+@api.route("/<int:id>")
+@api.response(404, "rollback not found")
+@api.param("id", "The task identifier")
+class Rollback(Resource):
+    """Show a single rollback item and lets you delete them"""
+
+    @api.doc("get_rollback")
+    def get(self, id):
+        """Fetch a given resource"""
+        return DAO.get(id)
+
+    @api.doc("delete_rollback")
+    @api.response(204, "Rollback deleted")
+    def delete(self, id):
+        """Delete a task given its identifier"""
+        DAO.delete(id)
+        return "", 204
