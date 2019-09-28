@@ -3,6 +3,7 @@ from flask_restplus import Api
 from .compare import api as ns1
 from .retry import api as ns2
 from .rollback import api as ns3
+from .one_by_one import api as ns4
 
 api = Api(
     version="1.0",
@@ -13,3 +14,4 @@ api = Api(
 api.add_namespace(ns1)
 api.add_namespace(ns2)
 api.add_namespace(ns3)
+api.add_namespace(ns4)
